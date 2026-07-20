@@ -1,9 +1,6 @@
 ---
 name: "astroph-radar"
-description: "Embed the Python script directly into the skill for robust and reproducible XML parsing."
-capabilities:
-  - id: search-astroph
-    description: "Queries arXiv filtering by astro-ph, extracting full abstracts, authors, and PDF links."
+description: "Queries arXiv filtering by astro-ph, extracting full abstracts, authors, and PDF links. Embeds the Python script directly into the skill for robust and reproducible XML parsing."
 ---
 
 # Astro-ph Radar Runbook
@@ -18,27 +15,15 @@ When the user requests a literature search for a specific topic, execute these s
    - Ensure spaces and quotes are URL-encoded (e.g., `%20AND%20`).
 
 2. **Execute Fetch and Parse:**
-   - Instead of using pure bash tools, create and run the following Python script (e.g., `parse_arxiv.py`) to fetch, parse, and format the XML data perfectly. It ensures correct highlighting and formatting.
+   - Instead of using pure bash tools, create and run the following Python script (e.g., `parse_arxiv.py`) to fetch, parse, and format the XML data perfectly.
 
 ```python
 import urllib.request
 import xml.etree.ElementTree as ET
-import re
 import sys
 
 # Inject the exact URL constructed in Step 1 here
 URL = "YOUR_CONSTRUCTED_URL_HERE"
-
-def highlight(text):
-    words_to_bold = [
-        "Gaia", "VVV", "VVVX", "H.E.S.S.", "ACS", "MACHO", "SEKBO", 
-        "metallicity", "decontamination", "maximum likelihood",
-        "spectroscopy", "photometry", "kinematics", "proper-motion"
-    ]
-    for w in words_to_bold:
-        pattern = re.compile(re.escape(w), re.IGNORECASE)
-        text = pattern.sub(lambda m: f"**{m.group(0)}**", text)
-    return text
 
 try:
     req = urllib.request.Request(URL, headers={'User-Agent': 'Mozilla/5.0'})
@@ -56,19 +41,19 @@ for entry in root.findall('atom:entry', ns):
     title_el = entry.find('atom:title', ns)
     if title_el is None or title_el.text == 'Error':
         continue
-        
+
     title = title_el.text.replace('\n', ' ').strip()
-    
+
     authors = [author.find('atom:name', ns).text for author in entry.findall('atom:author', ns)]
     author_str = f"{authors[0]}, {authors[1]}, {authors[2]}, {authors[3]} et al." if len(authors) > 4 else ", ".join(authors)
-        
+
     published = entry.find('atom:published', ns).text[:10]
-    
-    summary = highlight(entry.find('atom:summary', ns).text.replace('\n', ' ').strip())
-    
+
+    summary = entry.find('atom:summary', ns).text.replace('\n', ' ').strip()
+
     link_abs = entry.find('atom:id', ns).text
     link_pdf = link_abs.replace('/abs/', '/pdf/') + ".pdf"
-    
+
     print(f"**{title}**")
     print(f"**Authors:** {author_str}")
     print(f"**Date:** {published}")
