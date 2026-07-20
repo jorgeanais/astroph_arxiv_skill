@@ -1,6 +1,6 @@
 ---
 name: astroph-radar
-version: 1.1.0
+version: 1.2.0
 description: "Searches for recent papers specifically in the astro-ph repository on arXiv, preserving academic rigor."
 capabilities:
   - id: search-astroph
