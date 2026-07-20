@@ -1,6 +1,6 @@
 # Astro-ph Radar
 
-**Version:** 1.1.0  
+**Version:** 1.2.0  
 **Description:** Searches for recent papers specifically in the astro-ph repository on arXiv, preserving academic rigor.
 
 ## Capabilities
